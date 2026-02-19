@@ -4,15 +4,15 @@
 
 float hit_sphere(const point3 center, float radius, point3 ray_origin, vec3 ray_direction) {
     vec3 oc = vec3_sub(ray_origin, center);
-    float a = vec3_dot(ray_direction, ray_direction);
-    float b = 2.0f * vec3_dot(oc, ray_direction);
+    float a = vec3_length_squared(ray_direction);
+    float h = vec3_dot(oc, ray_direction);
     float c = vec3_dot(oc, oc) - radius * radius;
-    float discriminant = b * b - 4.0f * a * c;
+    float discriminant = h * h - a * c;
     
     if (discriminant < 0) {
         return -1.0;
     } else {
-        return (-b - sqrt(discriminant))/ (2.0 * a);
+        return (-h - sqrt(discriminant))/ a;
     }
 }
 
