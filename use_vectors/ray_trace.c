@@ -2,18 +2,28 @@
 #include "vec3.h"
 #include <stdbool.h>
 
-bool hit_sphere(const point3 center, float radius, point3 ray_origin, vec3 ray_direction) {
+float hit_sphere(const point3 center, float radius, point3 ray_origin, vec3 ray_direction) {
     vec3 oc = vec3_sub(ray_origin, center);
     float a = vec3_dot(ray_direction, ray_direction);
     float b = 2.0f * vec3_dot(oc, ray_direction);
     float c = vec3_dot(oc, oc) - radius * radius;
     float discriminant = b * b - 4.0f * a * c;
-    return discriminant > 0.0f;
+    
+    if (discriminant < 0) {
+        return -1.0;
+    } else {
+        return (-b - sqrt(discriminant))/ (2.0 * a);
+    }
 }
 
 vec3 ray_color(point3 ray_origin, vec3 ray_direction) {
-    if (hit_sphere(vec3_make(0.0f, 0.0f, -1.0f), 0.5f, ray_origin, ray_direction)) {
-        return vec3_make(1.0f, 0.0f, 0.0f);
+    float t = hit_sphere(vec3_make(0.0f, 0.0f, -1.0f), 0.5f, ray_origin, ray_direction);
+    if (t > 0.0f) {
+        point3 sphere_center = vec3_make(0.0f, 0.0f, -1.0f);
+        point3 hit_point = vec3_add(ray_origin, vec3_scale(ray_direction, t));
+        vec3 normal = vec3_unit(vec3_sub(hit_point, sphere_center));
+        vec3 one = vec3_make(1.0f, 1.0f, 1.0f);
+        return vec3_scale(vec3_add(normal, one), 0.5f);
     }
 
     vec3 unit_direction = vec3_unit(ray_direction);
